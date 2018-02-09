@@ -1,0 +1,9 @@
+@app.route("/expression_atlas")
+def atlas():
+	#cur.execute("SELECT tissue, COUNT(tissue) AS RTs_no_found, GROUP_CONCAT(DISTINCT RT SEPARATOR ',') AS RT_found FROM exp_atlas GROUP BY Tissue")
+	#atlas=cur.fetchall()
+	cur.execute("SELECT tissue, COUNT(tissue) AS RTs_no_found, GROUP_CONCAT(DISTINCT RT SEPARATOR ',') AS RT_found,concat(round(((SELECT COUNT(tissue))/(SELECT counts from exp_atlas_count)* 100 )),'%') FROM exp_atlas GROUP BY Tissue")
+	overall_percentage=cur.fetchall()
+	cur.execute("SELECT tissue, COUNT(tissue) AS RTs_no_found, GROUP_CONCAT(DISTINCT RT SEPARATOR ',') AS RT_found,concat(round(((SELECT COUNT(RT))/(SELECT heart from exp_atlas_count)* 100 )),'%') FROM exp_atlas WHERE `tissue`='heart' GROUP BY RT")
+	individual_percentage=cur.fetchall()
+	return render_template("expression_atlas.html",overall_percentage=overall_percentage,individual_percentage=individual_percentage)
